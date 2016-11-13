@@ -4,7 +4,6 @@ import time
 
 import corr
 import matplotlib.pyplot as plt
-
 import mbf
 
 
@@ -78,7 +77,7 @@ try:
 
     print 'Configuring FFT shift register...',
     fpga.write_int('gain', 1)
-    fpga.write_int('cal_acc_len', 2 ** 12)
+    fpga.write_int('cal_acc_len', 2**12)
     print 'done'
 
     print 'Resetting counters...',
