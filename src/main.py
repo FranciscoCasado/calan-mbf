@@ -1,10 +1,11 @@
+import logging
+import sys
+import time
+
 import corr
 import matplotlib.pyplot as plt
-import sixteen
-import sys
-import struct
-import logging
-import time
+
+import mbf
 
 
 bitstream = 'read_power_16chan_2017_Oct_30_1556.bof'
@@ -86,16 +87,18 @@ try:
     print 'done'
 
     if opts.power_bars & (not opts.channels):
-        powers = sixteen.Powers(fpga, plt.figure())
+        powers = mbf.Powers(fpga, plt.figure())
     elif (not opts.power_bars) & opts.channels:
-        channels = sixteen.LiveChannels(fpga, plt.figure())
+        channels = (fpga, plt.figure())
     else:
-        # powers = sixteen.Powers(fpga, plt.figure())
-        channels = sixteen.LiveChannels(fpga, plt.figure())
-        # four_channels = sixteen.FourChannels(fpga, plt.figure())
-        spectra_real = sixteen.FourSpectra(fpga, plt.figure(), mode='real')
-        spectra_imag = sixteen.FourSpectra(fpga, plt.figure(), mode='imag')
+        # powers = mbf.Powers(fpga, plt.figure())
+        channels = mbf.LiveChannels(fpga, plt.figure())
+        # four_channels = mbf.FourChannels(fpga, plt.figure())
+        spectra_real = mbf.FourSpectra(fpga, plt.figure(), mode='real')
+        spectra_imag = mbf.FourSpectra(fpga, plt.figure(), mode='imag')
     plt.show()
+
+
 
 except KeyboardInterrupt:
     exit_clean()
