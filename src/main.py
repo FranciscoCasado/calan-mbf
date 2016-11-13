@@ -75,6 +75,16 @@ try:
     else:
         print 'Skipped.'
 
+    print 'Configuring FFT shift register...',
+    fpga.write_int('gain', 1)
+    fpga.write_int('cal_acc_len', 2 ** 12)
+    print 'done'
+
+    print 'Resetting counters...',
+    fpga.write_int('cnt_rst', 1)
+    fpga.write_int('cnt_rst', 0)
+    print 'done'
+
     if opts.power_bars & (not opts.channels):
         powers = sixteen.Powers(fpga, plt.figure())
     elif (not opts.power_bars) & opts.channels:
@@ -82,8 +92,9 @@ try:
     else:
         # powers = sixteen.Powers(fpga, plt.figure())
         channels = sixteen.LiveChannels(fpga, plt.figure())
-        four_channels = sixteen.FourChannels(fpga, plt.figure())
-        spectra = sixteen.Spectra(fpga, plt.figure())
+        # four_channels = sixteen.FourChannels(fpga, plt.figure())
+        spectra_real = sixteen.FourSpectra(fpga, plt.figure(), mode='real')
+        spectra_imag = sixteen.FourSpectra(fpga, plt.figure(), mode='imag')
     plt.show()
 
 except KeyboardInterrupt:
