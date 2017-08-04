@@ -20,7 +20,7 @@ As as the CASPER [toolflow settings page](https://casper.berkeley.edu/wiki/MSSGE
   ```bash
   $ pip install corr
   ```
-    This python library includes `katcp`, which is required to stablish communication between your PC and a ROACH2.
+  This python library includes `katcp`, which is required to stablish communication between your PC and a ROACH2.
 
 4. Ruby files for testing - *by [davidm](https://github.com/david-macmahon)*
 
