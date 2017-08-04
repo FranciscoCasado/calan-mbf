@@ -40,8 +40,8 @@ A [ROACH2 rev2](https://casper.berkeley.edu/wiki/ROACH2) and an [ADC16x250-8 coa
 
 The `utilities` folder contains the source written by davidm and a simulink model `adc16_1brd_200_rev2a.slx`, with its respective .bof file.
 
-1. Power up the ROACH2 and connect it to the local network (same as your PC).
-2. Open an iPython session to upload the .bof file to the ROACH2 with katcp. In a terminal, type `$ ipython` and enter the following commands:
+1. Power up the ROACH2 and connect it to the local network (same as your PC). Connect the clock source to the ADC16 board (at the lab we have a Valon Synthesizer) and plug the ADC16 inputs to some RF signal. Make sure the clock source supplies 6 dBm (valon_synth lvl. 4) and the RF signal of each input is near 0 dBm.
+2. On your PC, open an iPython session to upload the .bof file to the ROACH2 with katcp. In a terminal, type `$ ipython` and enter the following commands:
   ```python
   In [1]: import corr
   In [2]: fpga = corr.katcp_wrapper.FpgaClient('ROACH2_ip_address')
