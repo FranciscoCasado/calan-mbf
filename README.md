@@ -11,8 +11,10 @@ Important libraries can be obtained/installed as follows:
 1. CASPER `mlib_devel`:
 Open a terminal and execute these commands
   ```bash
-  $ git clone https://github.com/casper-astro/mlib_devel.git
+  $ git clone https://github.com/FranciscoCasado/mlib_devel.git
   ```
+  This repo is a fork from [casper-astro](https://github.com/casper-astro/mlib_devel) (0c3f334) with downgraded pcores in order to compile and *work* with test files (detailed later).
+
 2. Missing `pcores`:
 As as the CASPER [toolflow settings page](https://casper.berkeley.edu/wiki/MSSGE_Setup_with_Xilinx_14.x_and_Matlab_2012b) says, there are some *tweaks to be able to compile*. The most important is to download the compressed folder that has the missing `pcores` from Xilinx. Extract the files to `mlib_devel/xps_base/XPS_ROACH2_base/pcores`.
 
@@ -61,5 +63,5 @@ The `utilities` folder contains the source written by davidm and a simulink mode
 
 4. Run the histogram scripts
   ```bash
-  $ ruby1.9.1 ./adc16_plot_chans.rb -H ROACH2_ip_address
+  $ ruby1.9.1 ./adc16_plot_chans.rb ROACH2_ip_address
   ```
