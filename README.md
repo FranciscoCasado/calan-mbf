@@ -11,7 +11,7 @@ Important libraries can be obtained/installed as follows:
 1. CASPER `mlib_devel`:
 Open a terminal and execute these commands
   ```bash
-  $ git clone https://github.com/FranciscoCasado/mlib_devel.git
+  git clone https://github.com/FranciscoCasado/mlib_devel.git
   ```
   This repo is a fork from [casper-astro](https://github.com/casper-astro/mlib_devel) (0c3f334) with downgraded pcores in order to compile and *work* with test files (detailed later).
 
@@ -20,18 +20,18 @@ As as the CASPER [toolflow settings page](https://casper.berkeley.edu/wiki/MSSGE
 
 3. CASPER `corr` library: install it via pip
   ```bash
-  $ pip install corr
+  pip install corr
   ```
   This python library includes `katcp`, which is required to stablish communication between your PC and a ROACH2.
 
 4. Ruby files for testing - *by [davidm](https://github.com/david-macmahon)*
 
   ```bash
-  $ gem install --source http://astro.berkeley.edu/~davidm/gems adc16
-  $ git clone git://github.com/david-macmahon/casper_adc16.git
-  $ gem install pgplot
-  $ gem install --source http://astro.berkeley.edu/~davidm/gems pgplotter
-  $ gem install gsl
+  gem install --source http://astro.berkeley.edu/~davidm/gems adc16
+  git clone git://github.com/david-macmahon/casper_adc16.git
+  gem install pgplot
+  gem install --source http://astro.berkeley.edu/~davidm/gems pgplotter
+  gem install gsl
   ```
 If `gsl` installation fails, [this page](https://coderwall.com/p/jk--aw/ruby-gsl-error-failed-to-build-gem-native-extension) should help.
 
@@ -56,8 +56,8 @@ The `utilities` folder contains the source written by davidm and a simulink mode
   ```
 3. Open another terminal and execute the ruby init script in the `utilities/adc16_test/src/bin` folder:
   ```bash
-  $ cd utilities/src/bin
-  $ ruby1.9.1 ./adc16_init.rb --demux 1 ROACH2_ip_address adc16_1brd_200_rev2a.bof
+  cd utilities/src/bin
+  ruby1.9.1 ./adc16_init.rb --demux 1 ROACH2_ip_address adc16_1brd_200_rev2a.bof
   ```
   Note that the .bof file name does not contain the path, as it is the copy uploaded to the ROACH2.
 
