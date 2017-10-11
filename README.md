@@ -18,13 +18,22 @@ Open a terminal and execute these commands
 2. Missing `pcores`:
 As as the CASPER [toolflow settings page](https://casper.berkeley.edu/wiki/MSSGE_Setup_with_Xilinx_14.x_and_Matlab_2012b) says, there are some *tweaks to be able to compile*. The most important is to download the compressed folder that has the missing `pcores` from Xilinx. Extract the files to `mlib_devel/xps_base/XPS_ROACH2_base/pcores`.
 
-3. CASPER `corr` library: install it via pip
+3. Set local environment variables:
+In the `mlib_devel` folder, there is the file `startsg`, which can be run from a terminal and opens matlab and loads the necessary CASPER libraries. This file requieres de definition of at least three environment variables that can be written into another file (created by each user) named `startsg.local`:
+  ```
+  MATLAB_PATH=/usr/local/MATLAB/R2013a/
+  XILINX_PLATFORM=lin64
+  XILINX_PATH=/opt/Xilinx/14.7/ISE_DS
+  ```
+ Replace the correct Matlab and Xilinx version numbers in each path. Also verify that these are the actual installation felder paths.
+
+4. CASPER `corr` library: install it via pip
   ```bash
   pip install corr
   ```
   This python library includes `katcp`, which is required to stablish communication between your PC and a ROACH2.
 
-4. Ruby files for testing - *by [davidm](https://github.com/david-macmahon)*
+5. Ruby files for testing - *by [davidm](https://github.com/david-macmahon)*
 
   ```bash
   gem install --source http://astro.berkeley.edu/~davidm/gems adc16
@@ -63,5 +72,5 @@ The `utilities` folder contains the source written by davidm and a simulink mode
 
 4. Run the histogram scripts
   ```bash
-  $ ruby1.9.1 ./adc16_plot_chans.rb ROACH2_ip_address
+  ruby1.9.1 ./adc16_plot_chans.rb ROACH2_ip_address
   ```
