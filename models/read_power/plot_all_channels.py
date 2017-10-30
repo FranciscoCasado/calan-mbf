@@ -17,7 +17,7 @@ class SixteenChannelsLive(animation.TimedAnimation):
         self.letters = ['a', 'b', 'c', 'd']
         self.fpga = fpga
 
-        self.t = np.linspace(0, 1023, 1024) #needed for fake data
+        #self.t = np.linspace(0, 1023, 1024) #needed for fake data
 
         fig = plt.figure()
         axes = [None]*16
@@ -35,7 +35,7 @@ class SixteenChannelsLive(animation.TimedAnimation):
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
-        animation.TimedAnimation.__init__(self, fig, interval=50, blit=True)
+        animation.TimedAnimation.__init__(self, fig, interval=10, blit=True)
 
     def _draw_frame(self, framedata):
         self.update_data()
@@ -52,11 +52,11 @@ class SixteenChannelsLive(animation.TimedAnimation):
         for l in lines:
             l.set_data([], [])
 
-    def read_snap(self,snap_name):
-        # raw_data = numpy.fromstring(self.fpga.snapshot_get(snap_name, man_trig=True, man_valid=True)['data'], dtype='<i1')
+    def read_snap(self, snap_name):
+        raw_data = np.fromstring(self.fpga.snapshot_get(snap_name, man_trig=True, man_valid=True)['data'], dtype='<i1')
         # generate fake data
-        fake_t = np.linspace(0, 1023, 1024*4)
-        raw_data = np.sin(2 * np.pi * (fake_t + random.randint(-3, 3)) / 10.) * (100 + random.randint(-10, 10))
+        #fake_t = np.linspace(0, 1023, 1024*4)
+        #raw_data = np.sin(2 * np.pi * (fake_t + random.randint(-3, 3)) / 10.) * (100 + random.randint(-10, 10))
 
 
         sub_chan_1 = []
@@ -86,8 +86,8 @@ class SixteenChannelsLive(animation.TimedAnimation):
 
 
 
-#fpga = corr.katcp_wrapper.FpgaClient('192.168.1.13')
-fpga = 'not_an_fpga (for now)'
+fpga = corr.katcp_wrapper.FpgaClient('192.168.1.13')
+#fpga = 'not_an_fpga (for now)'
 
 # set up the figure with a subplot to be plotted
 # start the process
