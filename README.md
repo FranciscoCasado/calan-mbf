@@ -63,14 +63,25 @@ The `utilities` folder contains the source written by davidm and a simulink mode
   ```python
   In [4]: fpga.listbof()
   ```
-3. Open another terminal and execute the ruby init script in the `utilities/adc16_test/src/bin` folder:
+3. Open another terminal and execute the shell script `adc16_test`. This script runs two ruby routines that turn ADC boards on, calibrates all channels (A,B,C,D) and then plots a snapshot of every signal. These routines can be run individually from the terminal:
   ```bash
-  cd utilities/src/bin
+  cd utils/adc16_test/src/bin
   ruby1.9.1 ./adc16_init.rb --demux 1 ROACH2_ip_address adc16_1brd_200_rev2a.bof
+  ruby1.9.1 ./adc16_plot_chans.rb ROACH2_ip_address
   ```
   Note that the .bof file name does not contain the path, as it is the copy uploaded to the ROACH2.
 
-4. Run the histogram scripts
+## Calibration Process
+
+Current state of the project is tuning the analog gain of the down-converters and. After that, phase calibrations must be performed in order to achieve coherent signals.
+
+### Amplitude Calibration
+
+The down-converters (MAX2851) have programmable analog gain adjustment. In order to monitor the amplitude while changing the gain, a simple model and python scripts are available in the `models/read_power` folder. The model consists of snapshots and power integrators; the python script is permanently reading the data and displaying them in two figures: _RMS_-power and snapshots of everysignal.
+
+To run this script, the user must have programmed the ROACH2 and calibrated the ADC board. This can be done automatically by running the shell script `adc16_test`. After that, the python script can be run:
   ```bash
-  ruby1.9.1 ./adc16_plot_chans.rb ROACH2_ip_address
+  ./adc16_test
+  python read_power_16chan.py
   ```
+
