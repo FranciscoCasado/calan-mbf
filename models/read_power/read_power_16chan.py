@@ -75,24 +75,6 @@ try:
     else:
         print 'Skipped.'
 
-    # print 'Configuring accumulation period...',
-    # fpga.write_int('acc_len', opts.acc_len)
-    # print 'done'
-
-    # print 'Resetting counters...',
-    # fpga.write_int('cnt_rst', 1)
-    # fpga.write_int('cnt_rst', 0)
-    # print 'done'
-
-    # print 'Setting digital gain of all channels to %i...' % opts.gain,
-    # if not opts.skip:
-    #     fpga.write_int('gain', opts.gain)  # write the same gain for all inputs, all channels
-    #     print 'done'
-    # else:
-    #     print 'Skipped.'
-
-    # start the process
-
     if opts.power_bars & (not opts.channels):
         powers = sixteen.Powers(fpga, plt.figure())
     elif (not opts.power_bars) & opts.channels:

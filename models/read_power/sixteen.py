@@ -1,6 +1,5 @@
 import corr
 import logging
-import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import matplotlib.animation as animation
@@ -35,7 +34,7 @@ class LiveChannels(animation.TimedAnimation):
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
-        animation.TimedAnimation.__init__(self, fig, interval=10, blit=True)
+        animation.TimedAnimation.__init__(self, fig, interval=1000, blit=True)
 
     def _draw_frame(self, framedata):
         self.update_data()
@@ -52,32 +51,26 @@ class LiveChannels(animation.TimedAnimation):
         for l in lines:
             l.set_data([], [])
 
-    def read_snap(self, snap_name):
-        raw_data = np.fromstring(self.fpga.snapshot_get(snap_name, man_trig=True, man_valid=True)['data'], dtype='<i1')
+    def read_snap(self):
+        raw_data = np.fromstring(self.fpga.snapshot_get('snap128_a', man_trig=True, man_valid=True)['data'], dtype='<i1')
         # Generate fake data
         # fake_t = np.linspace(0, 1023, 1024*4)
         # raw_data = np.sin(2 * np.pi * (fake_t + random.randint(-3, 3)) / 10.) * (100 + random.randint(-10, 10))
 
-        sub_chan_1 = []
-        sub_chan_2 = []
-        sub_chan_3 = []
-        sub_chan_4 = []
+        channels = []
+        for i in range(16):
+            channels.append([])
         # interleave
-        for i in range(1024):
-            sub_chan_1.append(raw_data[i * 4])
-            sub_chan_2.append(raw_data[i * 4 + 1])
-            sub_chan_3.append(raw_data[i * 4 + 2])
-            sub_chan_4.append(raw_data[i * 4 + 3])
+        for n in range(1024):
+            for i in range(16):
+                channels[i].append(raw_data[n * 16 + i])
 
-        return [sub_chan_1, sub_chan_2, sub_chan_3, sub_chan_4]
+        return channels
 
     def update_data(self):
-        for i in range(4):
-            data = self.read_snap('snap_'+self.letters[i])
-            self.channels[i*4+0] = data[0]
-            self.channels[i*4+1] = data[1]
-            self.channels[i*4+2] = data[2]
-            self.channels[i*4+3] = data[3]
+        data = self.read_snap()
+        for i in range(16):
+            self.channels[i] = np.array(data[i])
 
 
 class Powers(animation.TimedAnimation):
@@ -112,11 +105,8 @@ class Powers(animation.TimedAnimation):
 
     def _draw_frame(self, framedata):
         self.update_data()
-        # self.axes.clear()
         for i in range(16):
             self.bars[i].set_height(self.powers[i])
-        # self.axes.set_ylim(-20, 5)
-        # self.axes.grid('on')
         self.line_mean.set_data(self.xdom_lines, self.rms_mean_dB)
         self.line_dev_sup.set_data(self.xdom_lines, self.rms_mean_dB + self.rms_dev_dB)
         self.line_dev_inf.set_data(self.xdom_lines, self.rms_mean_dB - self.rms_dev_dB)
@@ -154,4 +144,4 @@ class Powers(animation.TimedAnimation):
     def update_data(self):
         self.powers = np.log10(self.read_regs())*10
         self.rms_mean_dB = np.zeros(17) + np.mean(self.powers)
-        self.rms_dev_dB = np.zeros(17)  + np.std(self.powers)
+        self.rms_dev_dB = np.zeros(17) + np.std(self.powers)
