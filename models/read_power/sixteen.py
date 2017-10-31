@@ -6,7 +6,6 @@ from matplotlib.lines import Line2D
 import matplotlib.animation as animation
 import struct
 import sys
-import time
 import pylab
 import numpy as np
 import random
@@ -96,18 +95,20 @@ class Powers(animation.TimedAnimation):
         self.axes = fig.add_subplot(1, 1, 1)
         self.axes.set_title('Powers')
         self.axes.set_xlim(1, 16)
-        self.axes.set_ylim(0, 1.5)
+        self.axes.set_ylim(-20, 5)
+        self.axes.grid('on')
         # axes.set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
-        animation.TimedAnimation.__init__(self, fig, interval=100, blit=True)
+        animation.TimedAnimation.__init__(self, fig, interval=20, blit=True)
 
     def _draw_frame(self, framedata):
         self.update_data()
         # self.line.set_data(self.t, np.array(self.powers))
         self.axes.clear()
-        self.axes.set_ylim(0, 1.5)
+        self.axes.set_ylim(-20, 5)
+        self.axes.grid('on')
         self.axes.bar(self.t, self.powers)
         # self._drawn_artists = [self.line]
 
@@ -137,12 +138,12 @@ class Powers(animation.TimedAnimation):
         rms_d3 = self.fpga.read_uint('reg_d3')/2.0**15
         rms_d4 = self.fpga.read_uint('reg_d4')/2.0**15
 
-        return[rms_a1, rms_a2, rms_a3, rms_a4,
+        return [rms_a1, rms_a2, rms_a3, rms_a4,
                rms_b1, rms_b2, rms_b3, rms_b4,
                rms_c1, rms_c2, rms_c3, rms_c4,
                rms_d1, rms_d2, rms_d3, rms_d4]
 
     def update_data(self):
         #print("******")
-        self.powers = np.array(self.read_regs())
+        self.powers = np.log10(np.array(self.read_regs()))*10
         #print(self.powers)
