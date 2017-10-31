@@ -1,3 +1,3 @@
 #!/bin/bash
-ruby1.9.1 utils/adc16_test/src/bin/adc16_init.rb --demux 1 192.168.1.13 read_power_16chan.bof
+ruby1.9.1 utils/adc16_test/src/bin/adc16_init.rb --demux 1 192.168.1.13 read_power_16chan_2017_Oct_30_1556.bof
 ruby1.9.1 utils/adc16_test/src/bin/adc16_plot_chans.rb 192.168.1.13
