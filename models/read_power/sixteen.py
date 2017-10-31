@@ -86,13 +86,14 @@ class Powers(animation.TimedAnimation):
         self.letters = ['a', 'b', 'c', 'd']
         self.fpga = fpga
 
-        self.t = np.linspace(1, 16, 16)  # needed as x domain
-        self.rms_mean_dB = np.zeros(16)
-        self.rms_dev_dB = np.zeros(16)
+        self.xdom_bars = np.linspace(1, 16, 16)  # needed as x domain
+        self.xdom_lines = np.linspace(1, 17, 17)
+        self.rms_mean_dB = np.zeros(17)
+        self.rms_dev_dB = np.zeros(17)
 
         self.fig = fig
         self.axes = fig.add_subplot(1, 1, 1)
-        self.bars = self.axes.bar(self.t, self.powers)
+        self.bars = self.axes.bar(self.xdom_bars, self.powers)
         self.line_mean = Line2D([], [], color='black')
         self.axes.add_line(self.line_mean)
         self.line_dev_sup = Line2D([], [], color='black', linestyle='dashed')
@@ -100,7 +101,7 @@ class Powers(animation.TimedAnimation):
         self.line_dev_inf = Line2D([], [], color='black', linestyle='dashed')
         self.axes.add_line(self.line_dev_inf)
         self.axes.set_title('Powers')
-        self.axes.set_xlim(1, 16)
+        self.axes.set_xlim(1, 17)
         self.axes.set_ylim(-20, 5)
         self.axes.grid('on')
         # axes.set_aspect('equal', 'datalim')
@@ -116,9 +117,9 @@ class Powers(animation.TimedAnimation):
             self.bars[i].set_height(self.powers[i])
         # self.axes.set_ylim(-20, 5)
         # self.axes.grid('on')
-        self.line_mean.set_data(self.t, self.rms_mean_dB)
-        self.line_dev_sup.set_data(self.t, self.rms_mean_dB + self.rms_dev_dB)
-        self.line_dev_inf.set_data(self.t, self.rms_mean_dB - self.rms_dev_dB)
+        self.line_mean.set_data(self.xdom_lines, self.rms_mean_dB)
+        self.line_dev_sup.set_data(self.xdom_lines, self.rms_mean_dB + self.rms_dev_dB)
+        self.line_dev_inf.set_data(self.xdom_lines, self.rms_mean_dB - self.rms_dev_dB)
         # self._drawn_artists = [self.line_mean, self.line_dev_sup, self.line_dev_inf]
 
     def new_frame_seq(self):
@@ -152,5 +153,5 @@ class Powers(animation.TimedAnimation):
 
     def update_data(self):
         self.powers = np.log10(self.read_regs())*10
-        self.rms_mean_dB = np.zeros(16) + np.mean(self.powers)
-        self.rms_dev_dB = np.zeros(16)  + np.std(self.powers)
+        self.rms_mean_dB = np.zeros(17) + np.mean(self.powers)
+        self.rms_dev_dB = np.zeros(17)  + np.std(self.powers)
