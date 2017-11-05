@@ -145,3 +145,66 @@ class Powers(animation.TimedAnimation):
         self.powers = np.log10(self.read_regs())*10
         self.rms_mean_dB = np.zeros(17) + np.mean(self.powers)
         self.rms_dev_dB = np.zeros(17) + np.std(self.powers)
+
+
+class Spectra(animation.TimedAnimation):
+    def __init__(self, fpga, fig):
+        self.channels = [None]*16
+        self.letters = ['a', 'b', 'c', 'd']
+        self.fpga = fpga
+
+        self.t = np.linspace(0, 1023, 1024)  # needed as x domain
+
+        self.fig = fig
+        self.axes = [None]*16
+        self.lines = [None]*16
+        for i in range(16):
+            self.axes[i] = self.fig.add_subplot(4, 4, i+1)
+            # axes[i].set_xlabel('N')
+            # axes[i].set_ylabel(self.letters[i/4]+str(i%4+1))
+            self.axes[i].set_title(self.letters[i/4]+str(i % 4+1))
+            self.lines[i] = Line2D([], [], color='blue')
+            self.axes[i].add_line(self.lines[i])
+            self.axes[i].set_xlim(0, 64)
+            self.axes[i].set_ylim(-128, 128)
+            # axes[i].set_aspect('equal', 'datalim')
+
+        plt.tight_layout()  # prevent text & graphs overlapping
+
+        animation.TimedAnimation.__init__(self, fig, interval=1000, blit=True)
+
+    def _draw_frame(self, framedata):
+        self.update_data()
+        for i in range(16):
+            self.lines[i].set_data(self.t, np.array(self.channels[i]))
+
+        self._drawn_artists = self.lines
+
+    def new_frame_seq(self):
+        return iter(range(1))
+
+    def _init_draw(self):
+        lines = self.lines
+        for l in lines:
+            l.set_data([], [])
+
+    def read_data(self):
+        self.fpga.write_int('data_cntl', 1)
+        chan = [[], [], [], []]
+        chan[0] = np.fromstring(self.fpga.read('dout0', 512*8, 0), dtype='<i1')
+        chan[1] = np.fromstring(self.fpga.read('dout1', 512*8, 0), dtype='<i1')
+        chan[2] = np.fromstring(self.fpga.read('dout2', 512*8, 0), dtype='<i1')
+        chan[3] = np.fromstring(self.fpga.read('dout3', 512*8, 0), dtype='<i1')
+        self.fpga.write_int('data_cntl', 1)
+        data_real = [[], [], [], []]
+        data_imag = [[], [], [], []]
+        k = 0
+        for i in range(256):
+            data_real[0].append(chan[k][2*i])
+            data_imag[0].append(chan[k][2*i+1])
+        return data_real, data_imag
+
+    def update_data(self):
+        data = self.read_snap()
+        for i in range(4):
+            self.channels[i] = np.array(data[i])
