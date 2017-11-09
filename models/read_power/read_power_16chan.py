@@ -80,8 +80,10 @@ try:
     elif (not opts.power_bars) & opts.channels:
         channels = sixteen.LiveChannels(fpga, plt.figure())
     else:
-        powers = sixteen.Powers(fpga, plt.figure())
+        # powers = sixteen.Powers(fpga, plt.figure())
         channels = sixteen.LiveChannels(fpga, plt.figure())
+        four_channels = sixteen.FourChannels(fpga, plt.figure())
+        spectra = sixteen.Spectra(fpga, plt.figure())
     plt.show()
 
 except KeyboardInterrupt:
