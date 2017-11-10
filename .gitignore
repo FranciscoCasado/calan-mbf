@@ -58,3 +58,6 @@ sysgen
 *_sysgen.log
 *_sysgen_error.log
 *_sysgen_warning.log
+
+# Python compiled
+*.pyc

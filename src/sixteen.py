@@ -167,12 +167,12 @@ class FourChannels(animation.TimedAnimation):
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 256)
-            # self.axes[i].set_ylim(0, 10)
+            self.axes[i].set_ylim(0, 10)
             # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
-        animation.TimedAnimation.__init__(self, fig, interval=1000, blit=True)
+        animation.TimedAnimation.__init__(self, fig, interval=100, blit=True)
 
     def _draw_frame(self, framedata):
         self.update_data()
@@ -210,35 +210,36 @@ class FourChannels(animation.TimedAnimation):
 
 
 class Spectra(animation.TimedAnimation):
-    def __init__(self, fpga, fig):
-        self.channels = [None]*4
-        self.letters = ['ab_re', 'ab_im', 'a2', 'b2']
+    def __init__(self, fpga, fig, mode):
+        self.channels = [None]*16
+        self.letters = ['a', 'b', 'c', 'd']
         self.fpga = fpga
+        self.mode = mode
 
         self.t = np.linspace(0, 255, 256)  # needed as x domain
 
         self.fig = fig
-        self.axes = [None]*4
-        self.lines = [None]*4
-        for i in range(4):
-            self.axes[i] = self.fig.add_subplot(2, 2, i+1)
+        self.axes = [None]*16
+        self.lines = [None]*16
+        for i in range(16):
+            self.axes[i] = self.fig.add_subplot(4, 4, i+1)
             # axes[i].set_xlabel('N')
             # axes[i].set_ylabel(self.letters[i/4]+str(i%4+1))
-            # self.axes[i].set_title(self.letters[i/4]+str(i % 4+1))
-            self.axes[i].set_title(self.letters[i])
+            self.axes[i].set_title(self.letters[i/4]+str(i % 4+1))
+            # self.axes[i].set_title(self.letters[i])
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
-            self.axes[i].set_xlim(0, 256)
+            self.axes[i].set_xlim(0, 128)
             self.axes[i].set_ylim(-2**17, 2**17)
             # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
-        animation.TimedAnimation.__init__(self, fig, interval=1000, blit=True)
+        animation.TimedAnimation.__init__(self, fig, interval=50, blit=True)
 
     def _draw_frame(self, framedata):
         self.update_data()
-        for i in range(4):
+        for i in range(16):
             self.lines[i].set_data(self.t, np.array(self.channels[i]))
 
         self._drawn_artists = self.lines
@@ -256,23 +257,26 @@ class Spectra(animation.TimedAnimation):
         self.fpga.write_int('call_new_acc', 0)
         acc_n = self.fpga.read_uint('cal_acc_count')
 
-        data_ab = np.fromstring(self.fpga.read('xab' + str(0) + '_ab3', 256 * 16, 0), dtype='>q')
-        data_pow = np.fromstring(self.fpga.read('xpow' + str(0) + '_s2', 256 * 16, 0), dtype='>Q')
+        data_ab = [None]*16
+        ab_re = [None]*16
+        ab_im = [None]*16
+        for i in range(16):
+            data_ab[i] = np.fromstring(self.fpga.read('xab' + str(i/4) + '_ab' + str(i%4), 256 * 16, 0), dtype='>q')
+            ab_re[i] = np.zeros(256)
+            ab_im[i] = np.zeros(256)
+            for j in range(len(data_ab[i]) / 2):
+                ab_re[i][j] = data_ab[i][j * 2]
+                ab_im[i][j] = data_ab[i][j * 2 + 1]
 
+            # data_pow = np.fromstring(self.fpga.read('xpow' + str(0) + '_s2', 256 * 16, 0), dtype='>Q')
         # interleave
-        ab_re = np.zeros(256)
-        ab_im = np.zeros(256)
-        a2 = np.zeros(256)
-        b2 = np.zeros(256)
-        for i in range(len(data_ab) / 2):
-            ab_re[i] = data_ab[i * 2]
-            ab_im[i] = data_ab[i * 2 + 1]
-            a2[i] = data_pow[i * 2]
-            b2[i] = data_pow[i * 2 + 1]
-
-        return ab_re, ab_im, a2, b2, acc_n
+        return ab_re, ab_im
 
     def update_data(self):
-        data = np.array(self.read_bram())
-        for i in range(2):
-            self.channels[i] = data[i]
+        data_re, data_im = np.array(self.read_bram())
+        if self.mode == 'real':
+            for i in range(16):
+                self.channels[i] = data_re[i]
+        elif self.mode == 'imag':
+            for i in range(16):
+                self.channels[i] = data_im[i]
