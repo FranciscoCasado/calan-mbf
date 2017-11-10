@@ -229,7 +229,7 @@ class Spectra(animation.TimedAnimation):
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 256)
-            self.axes[i].set_ylim(0, 10)
+            self.axes[i].set_ylim(-2**17, 2**17)
             # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
@@ -257,7 +257,7 @@ class Spectra(animation.TimedAnimation):
         acc_n = self.fpga.read_uint('cal_acc_count')
 
         data_ab = np.fromstring(self.fpga.read('xab' + str(0) + '_ab3', 256 * 16, 0), dtype='>q')
-        data_pow = np.fromstring(self.fpga.read('xpow' + str(0) + '_s2', 256 * 16, 0), dtype='>q')
+        data_pow = np.fromstring(self.fpga.read('xpow' + str(0) + '_s2', 256 * 16, 0), dtype='>Q')
 
         # interleave
         ab_re = np.zeros(256)
@@ -275,4 +275,4 @@ class Spectra(animation.TimedAnimation):
     def update_data(self):
         data = np.array(self.read_bram())
         for i in range(2):
-            self.channels[i] = data[i]/2.0**17
+            self.channels[i] = data[i]
