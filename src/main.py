@@ -91,10 +91,10 @@ try:
         channels = sixteen.LiveChannels(fpga, plt.figure())
     else:
         # powers = sixteen.Powers(fpga, plt.figure())
-        # channels = sixteen.LiveChannels(fpga, plt.figure())
+        channels = sixteen.LiveChannels(fpga, plt.figure())
         # four_channels = sixteen.FourChannels(fpga, plt.figure())
-        spectra_real = sixteen.Spectra(fpga, plt.figure(), mode='real')
-        spectra_imag = sixteen.Spectra(fpga, plt.figure(), mode='imag')
+        spectra_real = sixteen.FourSpectra(fpga, plt.figure(), mode='real')
+        spectra_imag = sixteen.FourSpectra(fpga, plt.figure(), mode='imag')
     plt.show()
 
 except KeyboardInterrupt:
