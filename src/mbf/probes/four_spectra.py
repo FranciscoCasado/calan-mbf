@@ -4,6 +4,8 @@ from matplotlib.lines import Line2D
 import matplotlib.animation as animation
 import numpy as np
 
+from mbf.actions import PhaseCalibration
+
 
 class FourSpectra(animation.TimedAnimation):
     def __init__(self, fpga, fig, mode):
@@ -32,9 +34,27 @@ class FourSpectra(animation.TimedAnimation):
         plt.tight_layout()  # prevent text & graphs overlapping
         #self.fpga.write_int('phase_re_0', 1 << 17)
         #self.fpga.write_int('phase_im_0', 0 << 17)
-        data_re, data_im = np.array(self.read_bram())
-        for i in range(4):
-            print str(data_re[i][13])+'\t'+str(data_im[i][13])
+
+        # Calibration
+        if self.mode == 'real':
+            data_re, data_im, acc_n = np.array(self.read_bram())
+            pcal = PhaseCalibration(fpga)
+            pcal.init_phase()
+
+            ref_re = data_re[0][13]
+            ref_im = data_im[0][13]
+            ref_mag = np.sqrt(ref_re**2+ref_im**2)
+            print "first data"
+            for i in range(4):
+                cal_re = data_re[i][13]
+                cal_im = data_im[i][13]
+                cal_mag = np.sqrt(cal_re**2+cal_im**2)
+                cal_re = -cal_re/cal_mag*ref_mag/cal_mag*2.0**17
+                cal_im = -cal_im/cal_mag*ref_mag/cal_mag*2.0**17
+                print 'a'+str(i+1)+':  ',
+                print str(int(data_re[i][13]))+'\t'+str(int(data_im[i][13]))
+                print '\t'+str(int(cal_re))+'\t'+str(int(cal_im))
+                pcal.set_phase('a'+str(i+1), cal_re, cal_im)
 
         animation.TimedAnimation.__init__(self, fig, interval=50, blit=True)
 
@@ -54,8 +74,9 @@ class FourSpectra(animation.TimedAnimation):
             l.set_data([], [])
 
     def read_bram(self):
-        self.fpga.write_int('call_new_acc', 1)
-        self.fpga.write_int('call_new_acc', 0)
+        if self.mode == 'real':
+            self.fpga.write_int('call_new_acc', 1)
+            self.fpga.write_int('call_new_acc', 0)
         acc_n = self.fpga.read_uint('cal_acc_count')
 
         data_ab = [None]*4
@@ -72,10 +93,10 @@ class FourSpectra(animation.TimedAnimation):
 
             # data_pow = np.fromstring(self.fpga.read('xpow' + str(0) + '_s2', 256 * 16, 0), dtype='>Q')
         # interleave
-        return ab_re, ab_im
+        return ab_re, ab_im, acc_n
 
     def update_data(self):
-        data_re, data_im = np.array(self.read_bram())
+        data_re, data_im, acc_n = np.array(self.read_bram())
         if self.mode == 'real':
             # print("     ")
             for i in range(4):
