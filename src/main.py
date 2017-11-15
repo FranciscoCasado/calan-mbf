@@ -96,10 +96,10 @@ try:
         channels = (fpga, plt.figure())
     else:
         # powers = mbf.Powers(fpga, plt.figure())
-        # channels = mbf.probes.LiveChannels(fpga, plt.figure())
+        channels = mbf.probes.LiveChannels(fpga, plt.figure())
         # four_channels = mbf.probes.FourChannels(fpga, plt.figure())
-        spectra_real = mbf.probes.FourSpectra(fpga, plt.figure(), mode='real')
-        spectra_imag = mbf.probes.FourSpectra(fpga, plt.figure(), mode='imag')
+        spectra_real = mbf.probes.Spectra(fpga, plt.figure(), mode='real')
+        spectra_imag = mbf.probes.Spectra(fpga, plt.figure(), mode='imag')
     plt.show()
 
 

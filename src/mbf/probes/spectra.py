@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import matplotlib.animation as animation
 import numpy as np
+from mbf.actions import PhaseCalibration
 
 
 class Spectra(animation.TimedAnimation):
@@ -11,7 +12,6 @@ class Spectra(animation.TimedAnimation):
         self.letters = ['a', 'b', 'c', 'd']
         self.fpga = fpga
         self.mode = mode
-
         self.t = np.linspace(0, 255, 256)  # needed as x domain
 
         self.fig = fig
@@ -30,6 +30,25 @@ class Spectra(animation.TimedAnimation):
             # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
+
+        # if self.mode == 'real':
+        #     data_re, data_im = np.array(self.read_bram())
+        #     pcal = PhaseCalibration(fpga)
+        #
+        #     ref_re = data_re[0][13]
+        #     ref_im = data_im[0][13]
+        #     ref_mag = np.sqrt(ref_re**2+ref_im**2)
+        #     print "first data"
+        #     for i in range(16):
+        #         cal_re = data_re[i][13]
+        #         cal_im = data_im[i][13]
+        #         cal_mag = np.sqrt(cal_re**2+cal_im**2)
+        #         cal_re = -cal_re/cal_mag*ref_mag/cal_mag*2.0**17
+        #         cal_im = -cal_im/cal_mag*ref_mag/cal_mag*2.0**17
+        #         print 'a'+str(i+1)+':  ',
+        #         print str(int(data_re[i][13]))+'\t'+str(int(data_im[i][13]))
+        #         print '\t'+str(int(cal_re))+'\t'+str(int(cal_im))
+        #         pcal.set_phase(self.letters[i/4]+str(i+1), cal_re, cal_im)
 
         animation.TimedAnimation.__init__(self, fig, interval=50, blit=True)
 
