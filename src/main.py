@@ -88,6 +88,7 @@ try:
     print 'Setting Initial Phase Calibration...',
     pcal = mbf.actions.PhaseCalibration(fpga)
     pcal.init_phase()
+    pcal.calibrate()
     print 'done'
 
     if opts.power_bars & (not opts.channels):
@@ -96,10 +97,10 @@ try:
         channels = (fpga, plt.figure())
     else:
         # powers = mbf.Powers(fpga, plt.figure())
-        channels = mbf.probes.LiveChannels(fpga, plt.figure())
+        # channels = mbf.probes.LiveChannels(fpga, plt.figure())
         # four_channels = mbf.probes.FourChannels(fpga, plt.figure())
-        spectra_real = mbf.probes.Spectra(fpga, plt.figure(), mode='real')
-        spectra_imag = mbf.probes.Spectra(fpga, plt.figure(), mode='imag')
+        spectra_real = mbf.probes.Spectra(fpga, plt.figure(), mode='real', numc=4)
+        spectra_imag = mbf.probes.Spectra(fpga, plt.figure(), mode='imag', numc=4)
     plt.show()
 
 
