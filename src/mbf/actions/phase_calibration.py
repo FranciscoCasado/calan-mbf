@@ -44,9 +44,8 @@ class PhaseCalibration:
 
     def calibrate(self):
         data_re, data_im, acc_n = np.array(self.read_bram())
-        pcal = PhaseCalibration(self.fpga)
         print "first data"
-        for i in range(16):
+        for i in range(4):
             ref_re = data_re[i/4][13]
             ref_im = data_im[i/4][13]
             ref_mag = np.sqrt(ref_re**2+ref_im**2)
@@ -58,18 +57,18 @@ class PhaseCalibration:
             print 'a'+str(i+1)+':  ',
             print str(int(data_re[i][13]))+'\t'+str(int(data_im[i][13]))
             print '\t'+str(int(cal_re))+'\t'+str(int(cal_im))
-            pcal.set_phase(self.letters[i/4]+str((i % 4)+1), int(cal_re), int(cal_im))
+            self.set_phase(self.letters[i/4]+str((i % 4)+1), int(cal_re), int(cal_im))
 
     def read_bram(self):
-        self.fpga.write_int('call_new_acc', 1)
-        self.fpga.write_int('call_new_acc', 0)
-        acc_n = self.fpga.read_uint('cal_acc_count')
+        self.fpga.write_int('cal_new_acc', 1)
+        self.fpga.write_int('cal_new_acc', 0)
+        acc_n = self.fpga.read_uint('acc_control_cal_acc_count')
 
-        data_ab = [None] * 16
-        ab_re = [None] * 16
-        ab_im = [None] * 16
-        for i in range(16):
-            data_ab[i] = np.fromstring(self.fpga.read('xab' + str(i / 4) + '_ab' + str(i % 4), 256 * 16, 0),
+        data_ab = [None] * 4
+        ab_re = [None] * 4
+        ab_im = [None] * 4
+        for i in range(4):
+            data_ab[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xab_ab' + str(i % 4), 256 * 16, 0),
                                        dtype='>q') / 2.0 ** 17
             ab_re[i] = np.zeros(256)
             ab_im[i] = np.zeros(256)

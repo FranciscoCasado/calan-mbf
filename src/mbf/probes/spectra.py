@@ -27,7 +27,7 @@ class Spectra(animation.TimedAnimation):
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 128)
-            self.axes[i].set_ylim(-2**0, 2**0)
+            self.axes[i].set_ylim(-2**1, 2**1)
             # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
@@ -49,16 +49,16 @@ class Spectra(animation.TimedAnimation):
             l.set_data([], [])
 
     def read_bram(self):
-        self.fpga.write_int('call_new_acc', 1)
-        self.fpga.write_int('call_new_acc', 0)
-        acc_n = self.fpga.read_uint('cal_acc_count')
+        self.fpga.write_int('cal_new_acc', 1)
+        self.fpga.write_int('cal_new_acc', 0)
+        acc_n = 0 # self.fpga.read_uint('cal_acc_count')
 
-        data_ab = [None]*self.numc
-        ab_re = [None]*self.numc
-        ab_im = [None]*self.numc
+        data_ab = [None] * self.numc
+        ab_re = [None] * self.numc
+        ab_im = [None] * self.numc
         for i in range(self.numc):
-            data_ab[i] = np.fromstring(self.fpga.read('xab' + str(i/4) + '_ab' + str(i%4), 256 * 16, 0),
-                                       dtype='>q')/2.0**17
+            data_ab[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xab_ab' + str(i % 4), 256 * 16, 0),
+                                       dtype='>q') / 2.0 ** 17
             ab_re[i] = np.zeros(256)
             ab_im[i] = np.zeros(256)
             for j in range(len(data_ab[i]) / 2):
@@ -75,3 +75,6 @@ class Spectra(animation.TimedAnimation):
         elif self.mode == 'imag':
             for i in range(self.numc):
                 self.channels[i] = (data_im[i])
+        else:
+            for i in range(self.numc):
+                self.channels[i] = (data_re[i]**2 + data_im[i]**2)

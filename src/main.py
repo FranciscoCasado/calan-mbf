@@ -76,13 +76,13 @@ try:
         print 'Skipped.'
 
     print 'Configuring FFT shift register...',
-    fpga.write_int('gain', 1)
+    fpga.write_int('cal_gain', 1)
     fpga.write_int('cal_acc_len', 2**12)
     print 'done'
 
     print 'Resetting counters...',
-    fpga.write_int('cnt_rst', 1)
-    fpga.write_int('cnt_rst', 0)
+    fpga.write_int('cal_cnt_rst', 1)
+    fpga.write_int('cal_cnt_rst', 0)
     print 'done'
 
     print 'Setting Initial Phase Calibration...',
@@ -101,6 +101,7 @@ try:
         # four_channels = mbf.probes.FourChannels(fpga, plt.figure())
         spectra_real = mbf.probes.Spectra(fpga, plt.figure(), mode='real', numc=4)
         spectra_imag = mbf.probes.Spectra(fpga, plt.figure(), mode='imag', numc=4)
+        spectra_pow = mbf.probes.Spectra(fpga, plt.figure(), mode='pow', numc=4)
     plt.show()
 
 
