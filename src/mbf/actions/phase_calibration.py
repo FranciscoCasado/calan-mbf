@@ -43,7 +43,7 @@ class PhaseCalibration:
         self.set_phase('d4', (1 << 17)-1, 0)
 
     def calibrate(self):
-        data_re, data_im, acc_n = np.array(self.read_bram())
+        data_re, data_im, data_pow, acc_n = np.array(self._read_bram())
         print "first data"
         for i in range(4):
             ref_re = data_re[i/4][13]
@@ -59,7 +59,7 @@ class PhaseCalibration:
             print '\t'+str(int(cal_re))+'\t'+str(int(cal_im))
             self.set_phase(self.letters[i/4]+str((i % 4)+1), int(cal_re), int(cal_im))
 
-    def read_bram(self):
+    def _read_bram(self):
         self.fpga.write_int('cal_new_acc', 1)
         self.fpga.write_int('cal_new_acc', 0)
         acc_n = self.fpga.read_uint('acc_control_cal_acc_count')
@@ -76,6 +76,16 @@ class PhaseCalibration:
                 ab_re[i][j] = data_ab[i][j * 2]
                 ab_im[i][j] = data_ab[i][j * 2 + 1]
 
-        return ab_re, ab_im, acc_n
+        data_pow = [None] * (4)
+        pow = [None] * 4
+        for i in range(4/2):
+            data_pow[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xpow_s' + str((i % 2)+1), 256 * 16, 0),
+                                       dtype='>q') / 2.0 ** 17
+            pow[2*i+0] = np.zeros(256)
+            pow[2*i+1] = np.zeros(256)
+            for j in range(len(data_pow[i]) / 2):
+                pow[2*i+0][j] = data_pow[i][j*2]
+                pow[2*i+1][j] = data_pow[i][j*2+1]
 
+        return ab_re, ab_im, pow, acc_n
 

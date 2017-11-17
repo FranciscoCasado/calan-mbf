@@ -27,7 +27,7 @@ class Spectra(animation.TimedAnimation):
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 128)
-            self.axes[i].set_ylim(-2**1, 2**1)
+            self.axes[i].set_ylim(-2**2, 2**2)
             # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
@@ -65,10 +65,21 @@ class Spectra(animation.TimedAnimation):
                 ab_re[i][j] = data_ab[i][j * 2]
                 ab_im[i][j] = data_ab[i][j * 2 + 1]
 
-        return ab_re, ab_im, acc_n
+        data_pow = [None] * (self.numc/2)
+        pow = [None] * self.numc
+        for i in range(self.numc/2):
+            data_pow[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xpow_s' + str((i % 2)+1), 256 * 16, 0),
+                                       dtype='>q') / 2.0 ** 17
+            pow[2*i+0] = np.zeros(256)
+            pow[2*i+1] = np.zeros(256)
+            for j in range(len(data_pow[i]) / 2):
+                pow[2*i+0][j] = data_pow[i][j*2]
+                pow[2*i+1][j] = data_pow[i][j*2+1]
+
+        return ab_re, ab_im, pow, acc_n
 
     def update_data(self):
-        data_re, data_im, acc_n = np.array(self.read_bram())
+        data_re, data_im, data_pow, acc_n = np.array(self.read_bram())
         if self.mode == 'real':
             for i in range(self.numc):
                 self.channels[i] = (data_re[i])
@@ -77,4 +88,4 @@ class Spectra(animation.TimedAnimation):
                 self.channels[i] = (data_im[i])
         else:
             for i in range(self.numc):
-                self.channels[i] = (data_re[i]**2 + data_im[i]**2)
+                self.channels[i] = (data_pow[i])
