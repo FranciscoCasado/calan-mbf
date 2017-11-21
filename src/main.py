@@ -78,7 +78,7 @@ try:
     print 'Configuring Quantizers...',
     fpga.write_int('cal_gain', 2**17)
     fpga.write_int('cal_acc_len', 2**12)
-    fpga.write_int('bf_gain', 2**1)
+    fpga.write_int('bf_gain', 2**17)
     fpga.write_int('bf_acc_len', 2**12)
     print 'done'
 
@@ -95,7 +95,7 @@ try:
 
     print 'Setting Beamformer...',
     bf = mbf.actions.Beamformer(fpga, 5, 10)
-    bf.steer_beam(0, 0)
+    bf.steer_beam(0, 45)
     print 'done'
 
     if opts.power_bars & (not opts.channels):
@@ -108,8 +108,8 @@ try:
         # four_channels = mbf.displays.FourChannels(fpga, plt.figure())
         # spectra_real = mbf.displays.Spectra(fpga, plt.figure(), mode='real', numc=4)
         # spectra_imag = mbf.displays.Spectra(fpga, plt.figure(), mode='imag', numc=4)
-        spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga), plt.figure(), mode='pow', numc=4)
-        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=4)
+        spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga), plt.figure(), mode='pow', numc=4, scale='dB')
+        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=6, scale='dB')
 
     plt.show()
 

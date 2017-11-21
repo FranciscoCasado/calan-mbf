@@ -19,11 +19,11 @@ class PhaseCalibration:
             print("invalid channel")
             return
 
-        self.fpga.write_int('phase_cal_addr', letter*4+num)
-        self.fpga.write_int('phase_cal_re', phase_re)
-        self.fpga.write_int('phase_cal_im', phase_im)
-        self.fpga.write_int('phase_cal_we', 1)
-        self.fpga.write_int('phase_cal_we', 0)
+        self.fpga.write_int('cal_phase_addr', letter*4+num)
+        self.fpga.write_int('cal_phase_re', phase_re)
+        self.fpga.write_int('cal_phase_im', phase_im)
+        self.fpga.write_int('cal_phase_we', 1)
+        self.fpga.write_int('cal_phase_we', 0)
 
     def init_phase(self):
         self.set_phase('a1', (1 << 16), (1 << 16))
@@ -66,7 +66,7 @@ class PhaseCalibration:
     def _read_bram(self):
         self.fpga.write_int('cal_new_acc', 1)
         self.fpga.write_int('cal_new_acc', 0)
-        acc_n = self.fpga.read_uint('acc_control_cal_acc_count')
+        acc_n = self.fpga.read_uint('acc_control_acc_count')
 
         data_ab = [None] * 16
         ab_re = [None] * 16

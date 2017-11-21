@@ -6,13 +6,14 @@ import numpy as np
 
 
 class Spectra(animation.TimedAnimation):
-    def __init__(self, probe, fig, mode, numc):
+    def __init__(self, probe, fig, mode, numc, scale):
         self.letters = ['a', 'b', 'c', 'd']
         self.probe = probe
         self.mode = mode
         self.numc = numc
-        _sp_rows = {1: 1, 4: 1, 16: 4}
-        _sp_columns = {1: 1, 4: 4, 16: 4}
+        self.scale = scale
+        _sp_rows = {1: 1, 4: 1, 16: 4, 6: 2}
+        _sp_columns = {1: 1, 4: 4, 16: 4, 6: 3}
         self.channels = [None]*self.numc
 
         self.fig = fig
@@ -28,7 +29,10 @@ class Spectra(animation.TimedAnimation):
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 63)
-            self.axes[i].set_ylim(-80, 10)
+            if self.scale == 'dB':
+                self.axes[i].set_ylim(-80, 10)
+            else:
+                self.axes[i].set_ylim(-4, 4)
             self.axes[i].grid('on')
             # self.axes[i].set_aspect('equal', 'datalim')
 
@@ -52,12 +56,16 @@ class Spectra(animation.TimedAnimation):
 
     def update_data(self):
         data_re, data_im, data_pow, acc_n = np.array(self.probe.read())
+        if self.scale == 'dB':
+            for i in range(self.numc):
+                data_pow[i] = 10*np.log10(data_pow[i]/(2.0**17))
+
         if self.mode == 'real':
             for i in range(self.numc):
-                self.channels[i] = 10*np.log10((data_re[i])/2.0**17)
+                self.channels[i] = data_re[i]
         elif self.mode == 'imag':
             for i in range(self.numc):
-                self.channels[i] = 10*np.log10((data_im[i])/2.0**17)
+                self.channels[i] = data_im[i]
         else:
             for i in range(self.numc):
-                self.channels[i] = 10*np.log10((data_pow[i])/2.0**17)
+                self.channels[i] = data_pow[i]
