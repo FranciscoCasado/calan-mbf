@@ -17,12 +17,12 @@ class Beamformer:
         self.fpga.write_int('bf_addr_y', self.addr_y)
 
         v_re, v_im = self.calculate_vector(theta, phi)
-        print 'steertin to:\t theta: '+str(theta)+' - phi: '+str(phi)
+        # print 'steering to:\t theta: '+str(theta)+' - phi: '+str(phi)
         for i in range(4):
             for j in range(4):
                 self.fpga.write_int('bf_addr_sub', i*4+j)
                 self.write_phase(v_re[i][j], v_im[i][j])
-                print 'writing '+str(i*4+j)+':\t re:'+str(v_re[i][j])+' - im:'+str(v_im[i][j])
+                # print 'writing '+str(i*4+j)+':\t re:'+str(v_re[i][j])+' - im:'+str(v_im[i][j])
 
     def calculate_vector(self, theta, phi):
         # Constants
@@ -42,7 +42,7 @@ class Beamformer:
         phi = np.pi / 180 * (90 - phi);
         a = np.array([-np.sin(theta) * np.cos(phi), -np.sin(theta) * np.sin(phi), -np.cos(theta)])
         k = 2 * np.pi / l * a
-        print k
+        # print k
         # Calculate array manifold vector
         v_re = np.zeros([4, 4])
         v_im = np.zeros([4, 4])

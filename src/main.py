@@ -95,7 +95,7 @@ try:
 
     print 'Setting Beamformer...',
     bf = mbf.actions.Beamformer(fpga, 5, 10)
-    bf.steer_beam(0, 45)
+    bf.steer_beam(0, 0)
     print 'done'
 
     if opts.power_bars & (not opts.channels):
@@ -112,7 +112,6 @@ try:
         bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=6, scale='dB')
 
     plt.show()
-
 
 
 except KeyboardInterrupt:

@@ -7,6 +7,13 @@ class BfSpectrometer:
         self.fpga = fpga
         self.numc = 6
 
+    def find_channel(self):
+        re, im, pow, acc_n = np.array(self.read())
+        # print pow
+        max_value = np.amax(pow[4])
+        max_index = np.argmax(pow[4])
+        return max_value, max_index
+
     def read(self):
         self.fpga.write_int('bf_new_acc', 1)
         self.fpga.write_int('bf_new_acc', 0)
@@ -22,7 +29,7 @@ class BfSpectrometer:
         pow = [None] * self.numc
         for i in range(self.numc / 2):
             data_pow[i] = np.fromstring(
-                self.fpga.read('bf_probe0_xpow_s' + str((i % 2) + 1), 256 * 16, 0),
+                self.fpga.read('bf_probe0_xpow_s' + str(i + 1), 256 * 16, 0),
                 dtype='>q') / 2.0 ** 17
             pow[2 * i + 0] = np.zeros(256)
             pow[2 * i + 1] = np.zeros(256)
