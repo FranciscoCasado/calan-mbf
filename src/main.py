@@ -37,8 +37,8 @@ if __name__ == '__main__':
     p.add_option("-i", '--roach_ip', dest='roach', type='str', default='192.168.1.13')
     # p.add_option('-l', '--acc_len', dest='acc_len', type='int', default=2 * (2 ** 28) / 2048,
     #              help='Set the number of vectors to accumulate between dumps. default is 2*(2^28)/2048, or just under 2 seconds.')
-    # p.add_option('-g', '--gain', dest='gain', type='int', default=0x1,
-    #              help='Set the digital gain (6bit quantisation scalar). Default is 0xffffffff (max), good for wideband noise. Set lower for CW tones.')
+    # p.add_option('-g', '--gain', dest='gain', type='int', default=2**17,
+    #              help='Set the digital gain (6bit quantisation scalar). Default is 2*17 (least number for not loosing less-significant bits)')
     p.add_option('-s', '--skip', dest='skip', action='store_false', default=True,
                  help='Skip reprogramming the FPGA and configuring EQ.')
     p.add_option('-b', '--bof', dest='boffile', type='str', default=bitstream,
@@ -75,9 +75,11 @@ try:
     else:
         print 'Skipped.'
 
-    print 'Configuring FFT shift register...',
-    fpga.write_int('cal_gain', 1)
+    print 'Configuring Quantizers...',
+    fpga.write_int('cal_gain', 2**17)
     fpga.write_int('cal_acc_len', 2**12)
+    fpga.write_int('bf_gain', 2**17)
+    fpga.write_int('bf_acc_len', 2**12)
     print 'done'
 
     print 'Resetting counters...',
@@ -85,26 +87,31 @@ try:
     fpga.write_int('cal_cnt_rst', 0)
     print 'done'
 
-    print 'Setting Initial Phase Calibration...',
+    print 'Setting Initial Phase Calibration...'
     pcal = mbf.actions.PhaseCalibration(fpga)
     pcal.init_phase()
     pcal.calibrate()
     print 'done'
 
+    print 'Setting Beamformer...',
+    bf = mbf.actions.Beamformer(fpga, 5, 10)
+    bf.steer_beam(0, 0)
+    print 'done'
+
     if opts.power_bars & (not opts.channels):
-        powers = mbf.probes.Powers(fpga, plt.figure())
+        powers = mbf.displays.Powers(fpga, plt.figure())
     elif (not opts.power_bars) & opts.channels:
         channels = (fpga, plt.figure())
     else:
         # powers = mbf.Powers(fpga, plt.figure())
-        # channels = mbf.probes.LiveChannels(fpga, plt.figure())
-        # four_channels = mbf.probes.FourChannels(fpga, plt.figure())
-        spectra_real = mbf.probes.Spectra(fpga, plt.figure(), mode='real', numc=4)
-        spectra_imag = mbf.probes.Spectra(fpga, plt.figure(), mode='imag', numc=4)
-        spectra_pow = mbf.probes.Spectra(fpga, plt.figure(), mode='pow', numc=4)
+        # channels = mbf.displays.LiveChannels(fpga, plt.figure())
+        # four_channels = mbf.displays.FourChannels(fpga, plt.figure())
+        # spectra_real = mbf.displays.Spectra(fpga, plt.figure(), mode='real', numc=4)
+        # spectra_imag = mbf.displays.Spectra(fpga, plt.figure(), mode='imag', numc=4)
+        spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga), plt.figure(), mode='pow', numc=4, scale='dB')
+        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=6, scale='dB')
 
     plt.show()
-
 
 
 except KeyboardInterrupt:
