@@ -94,8 +94,10 @@ try:
     print 'done'
 
     print 'Setting Beamformer...',
-    bf = mbf.actions.Beamformer(fpga, 5, 10)
-    bf.steer_beam(0, 0)
+    bf0 = mbf.actions.Beamformer(fpga, 5, 10)
+    bf0.steer_beam(0, 0)
+    bf1 = mbf.actions.Beamformer(fpga, 6, 11)
+    bf1.steer_beam(0, 0)
     print 'done'
 
     if opts.power_bars & (not opts.channels):
@@ -107,8 +109,8 @@ try:
         # channels = mbf.displays.LiveChannels(fpga, plt.figure())
         # spectra_real = mbf.displays.Spectra(fpga, plt.figure(), mode='real', numc=4)
         # spectra_imag = mbf.displays.Spectra(fpga, plt.figure(), mode='imag', numc=4)
-        spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga), plt.figure(), mode='pow', numc=4, scale='dB')
-        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=4, scale='dB')
+        spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga, numc=4), plt.figure(), mode='pow', scale='dB')
+        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga, numc=4), plt.figure(), mode='pow', scale='dB')
 
     plt.show()
 

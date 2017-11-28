@@ -3,9 +3,9 @@ import numpy as np
 
 
 class BfSpectrometer:
-    def __init__(self, fpga):
+    def __init__(self, fpga, numc):
         self.fpga = fpga
-        self.numc = 4
+        self.numc = 2
 
     def find_channel(self):
         re, im, pow, acc_n = np.array(self.read())

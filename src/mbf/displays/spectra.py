@@ -6,14 +6,22 @@ import numpy as np
 
 
 class Spectra(animation.TimedAnimation):
-    def __init__(self, probe, fig, mode, numc, scale):
+    def __init__(self, probe, fig, mode, scale):
         self.letters = ['a', 'b', 'c', 'd']
         self.probe = probe
         self.mode = mode
-        self.numc = numc
+        self.numc = self.probe.numc
         self.scale = scale
-        _sp_rows = {1: 1, 4: 1, 16: 4, 6: 2}
-        _sp_columns = {1: 1, 4: 4, 16: 4, 6: 3}
+        _sp_rows = {1: 1,
+                    4: 1,
+                    16: 4,
+                    2: 1,
+                    6: 2}
+        _sp_columns = {1: 1,
+                       4: 4,
+                       16: 4,
+                       2: 2,
+                       6: 3}
         self.channels = [None]*self.numc
 
         self.fig = fig
@@ -21,7 +29,7 @@ class Spectra(animation.TimedAnimation):
         self.lines = [None]*self.numc
         self.t = np.linspace(0, 255, 256)  # needed as x domain
         for i in range(self.numc):
-            self.axes[i] = self.fig.add_subplot(_sp_rows[numc], _sp_columns[numc], i+1)
+            self.axes[i] = self.fig.add_subplot(_sp_rows[self.numc], _sp_columns[self.numc], i+1)
             # axes[i].set_xlabel('N')
             # axes[i].set_ylabel(self.letters[i/4]+str(i%4+1))
             self.axes[i].set_title(mode+'[ a1 x '+self.letters[i/4]+str(i % 4+1)+' ]')

@@ -3,9 +3,9 @@ import numpy as np
 
 
 class CalSpectrometer:
-    def __init__(self, fpga):
+    def __init__(self, fpga, numc=16):
         self.fpga = fpga
-        self.numc = 16
+        self.numc = numc
 
     def read(self):
         self.fpga.write_int('cal_new_acc', 1)
