@@ -29,7 +29,8 @@ bf.steer_beam(0, 0)
 probe = mbf.probes.BfSpectrometer(fpga)
 
 
-theta = range(-90, 91, 1)
+
+theta = range(-90, 91, 15)
 phi = [0]  # range(-90, 90, 1)
 
 value = np.zeros([len(theta), len(phi)])
@@ -37,7 +38,7 @@ value = np.zeros([len(theta), len(phi)])
 bf.steer_beam(0, 0)
 val, index = probe.find_channel()
 print str(val)+str(index)
-time.sleep(5)
+time.sleep(10)
 
 
 for i in range(len(theta)):
@@ -46,9 +47,12 @@ for i in range(len(theta)):
         bf.steer_beam(theta[i], phi[j])
         time.sleep(0.5)
         re, im, pow, acc_n = probe.read()
-        data = 10*np.log10(pow[4]/(2.0**17))
+        data = 10*np.log10(pow[0]/(2.0**17))
         value[i][j] = data[index]
         print str(value[i][j])
 
 plt.plot(theta, value)
+plt.title('phi='+str(phi[0]))
+plt.xlabel('theta [deg]')
+plt.ylabel('Power [dB]')
 plt.show()

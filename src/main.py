@@ -103,13 +103,12 @@ try:
     elif (not opts.power_bars) & opts.channels:
         channels = (fpga, plt.figure())
     else:
-        # powers = mbf.Powers(fpga, plt.figure())
+        # powers = mbf.displays.Powers(mbf.probes.PowerIntegrator(fpga), plt.figure())
         # channels = mbf.displays.LiveChannels(fpga, plt.figure())
-        # four_channels = mbf.displays.FourChannels(fpga, plt.figure())
         # spectra_real = mbf.displays.Spectra(fpga, plt.figure(), mode='real', numc=4)
         # spectra_imag = mbf.displays.Spectra(fpga, plt.figure(), mode='imag', numc=4)
         spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga), plt.figure(), mode='pow', numc=4, scale='dB')
-        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=6, scale='dB')
+        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga), plt.figure(), mode='pow', numc=4, scale='dB')
 
     plt.show()
 

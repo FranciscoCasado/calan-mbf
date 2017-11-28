@@ -1,2 +1,3 @@
 from cal_spectrometer import CalSpectrometer
 from bf_spectrometer import BfSpectrometer
+from power_integrator import PowerIntegrator
