@@ -6,6 +6,7 @@ import corr
 import matplotlib.pyplot as plt
 import mbf
 
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 bitstream = 'read_power_16chan_2017_Oct_30_1556.bof'
 katcp_port = 7147
@@ -85,6 +86,8 @@ try:
     print 'Resetting counters...',
     fpga.write_int('cal_cnt_rst', 1)
     fpga.write_int('cal_cnt_rst', 0)
+    fpga.write_int('bf_cnt_rst', 1)
+    fpga.write_int('bf_cnt_rst', 0)
     print 'done'
 
     print 'Setting Initial Phase Calibration...'
@@ -110,7 +113,7 @@ try:
         # spectra_real = mbf.displays.Spectra(fpga, plt.figure(), mode='real', numc=4)
         # spectra_imag = mbf.displays.Spectra(fpga, plt.figure(), mode='imag', numc=4)
         spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga, numc=4), plt.figure(), mode='pow', scale='dB')
-        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga, numc=4), plt.figure(), mode='pow', scale='dB')
+        bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga, numc=2), plt.figure(), mode='pow', scale='dB')
 
     plt.show()
 

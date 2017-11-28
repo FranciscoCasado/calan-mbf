@@ -5,13 +5,13 @@ import numpy as np
 class BfSpectrometer:
     def __init__(self, fpga, numc):
         self.fpga = fpga
-        self.numc = 2
+        self.numc = numc
 
     def find_channel(self):
         re, im, pow, acc_n = np.array(self.read())
         # print pow
-        max_value = np.amax(pow[0])
-        max_index = np.argmax(pow[0])
+        max_value = np.amax(pow[1])
+        max_index = np.argmax(pow[1])
         return max_value, max_index
 
     def read(self):
