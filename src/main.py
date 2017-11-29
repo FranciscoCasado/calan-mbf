@@ -96,11 +96,13 @@ try:
     pcal.calibrate()
     print 'done'
 
-    print 'Setting Beamformer...',
+    print 'Setting Beamformers...',
     bf0 = mbf.actions.Beamformer(fpga, 5, 10)
     bf0.steer_beam(0, 0)
     bf1 = mbf.actions.Beamformer(fpga, 6, 11)
     bf1.steer_beam(0, 0)
+    bf2 = mbf.actions.Beamformer(fpga, 7, 12)
+    bf2.steer_beam(0, 0)
     print 'done'
 
     if opts.power_bars & (not opts.channels):
