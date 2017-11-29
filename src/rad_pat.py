@@ -39,14 +39,14 @@ bf.steer_beam(0, 0)
 probe = mbf.probes.BfSpectrometer(fpga, 2)
 
 # Define range
-theta = range(-60, 61, 10)
-phi = range(-60, 61, 10)
+theta = range(-60, 61, 3)
+phi = range(-60, 61, 3)
 
 value = np.zeros([len(theta), len(phi)])
 
 bf.steer_beam(0, 0)
 # val, index = probe.find_channel()
-time.sleep(1)
+time.sleep(10)
 
 
 for i in range(len(theta)):
@@ -58,13 +58,14 @@ for i in range(len(theta)):
 
         # Read spectrometer & process data
         re, im, pow, acc_n = probe.read()
+        time.sleep(0.001)
         data = (pow[1]/(2.0**17))
 
         # dummy data # pow = np.array([[0.5]*256, [0.4]*256])
         # dummy data # data = np.exp(-((i-len(theta)/2.0)/(len(theta)))**2 - ((j-len(phi)/2.0)/(len(theta)))**2)
 
         data_dB = 10*np.log10(data)
-        value[len(theta)-i-1][j] = data[12]
+        value[j][len(theta)-i-1] = data[12]
 
 
 # Save results and notify

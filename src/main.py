@@ -108,6 +108,7 @@ try:
     if opts.power_bars & (not opts.channels):
         powers = mbf.displays.Powers(fpga, plt.figure())
     elif (not opts.power_bars) & opts.channels:
+
         channels = (fpga, plt.figure())
     else:
         # powers = mbf.displays.Powers(mbf.probes.PowerIntegrator(fpga), plt.figure())
