@@ -6,6 +6,7 @@ class PowerIntegrator:
         self.fpga = fpga
 
     def read(self):
+        # Self-explanatory
         self.fpga.write_int('hold_data', 1)
         self.fpga.write_int('hold_data', 0)
         rms = np.array([self.fpga.read_uint('power_adc_a1'),

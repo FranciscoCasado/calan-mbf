@@ -11,6 +11,7 @@ class Powers(animation.TimedAnimation):
         self.letters = ['a', 'b', 'c', 'd']
         self.probe = probe
 
+        # Set figure
         self.xdom_bars = np.linspace(1, 16, 16)  # needed as x domain
         self.xdom_lines = np.linspace(1, 17, 17)
         self.rms_mean_dB = np.zeros(17)
@@ -44,7 +45,6 @@ class Powers(animation.TimedAnimation):
         self.line_mean.set_data(self.xdom_lines, self.rms_mean_dB)
         self.line_dev_sup.set_data(self.xdom_lines, self.rms_mean_dB + self.rms_dev_dB)
         self.line_dev_inf.set_data(self.xdom_lines, self.rms_mean_dB - self.rms_dev_dB)
-        # self._drawn_artists = [self.line_mean, self.line_dev_sup, self.line_dev_inf]
 
     def new_frame_seq(self):
         return iter(range(1))
@@ -55,6 +55,9 @@ class Powers(animation.TimedAnimation):
             l.set_data([], [])
 
     def update_data(self):
+        # Retrieve data
         self.powers = 10*np.log10(self.probe.read())
+
+        # Calculate mean and deviation
         self.rms_mean_dB = np.zeros(17) + np.mean(self.powers)
         self.rms_dev_dB = np.zeros(17) + np.std(self.powers)

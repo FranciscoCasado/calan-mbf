@@ -11,21 +11,18 @@ class LiveChannels(animation.TimedAnimation):
         self.letters = ['a', 'b', 'c', 'd']
         self.fpga = fpga
 
+        # Build figures
         self.t = np.linspace(0, 1023, 1024)  # needed as x domain
-
         self.fig = fig
         self.axes = [None]*16
         self.lines = [None]*16
         for i in range(16):
             self.axes[i] = self.fig.add_subplot(4, 4, i+1)
-            # axes[i].set_xlabel('N')
-            # axes[i].set_ylabel(self.letters[i/4]+str(i%4+1))
             self.axes[i].set_title(self.letters[i/4]+str(i % 4+1))
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 64)
             self.axes[i].set_ylim(-128, 128)
-            # axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
@@ -48,14 +45,12 @@ class LiveChannels(animation.TimedAnimation):
 
     def read_snap(self):
         raw_data = np.fromstring(self.fpga.snapshot_get('snap_adc_a', man_trig=True, man_valid=True)['data'], dtype='<i1')
-        # Generate fake data
-        # fake_t = np.linspace(0, 1023, 1024*4)
-        # raw_data = np.sin(2 * np.pi * (fake_t + random.randint(-3, 3)) / 10.) * (100 + random.randint(-10, 10))
 
         channels = []
         for i in range(16):
             channels.append([])
-        # interleave
+
+        # Interleave signals
         for n in range(1024):
             for i in range(16):
                 channels[i].append(raw_data[n * 16 + i])

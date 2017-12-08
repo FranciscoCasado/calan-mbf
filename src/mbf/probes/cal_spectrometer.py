@@ -21,9 +21,13 @@ class CalSpectrometer:
         data_ab = [None] * self.numc
         ab_re = [None] * self.numc
         ab_im = [None] * self.numc
+
+        # Read multiplication brams
         for i in range(self.numc):
             data_ab[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xab_ab' + str(i % 4), 256 * 16, 0),
                                        dtype='>q') / 2.0 ** 17
+
+            # Interleaving
             ab_re[i] = np.zeros(256)
             ab_im[i] = np.zeros(256)
             for j in range(len(data_ab[i]) / 2):
@@ -34,10 +38,14 @@ class CalSpectrometer:
     def _read_pow_bram(self):
         data_pow = [None] * (self.numc / 2)
         pow = [None] * self.numc
+
+        # Read power brams
         for i in range(self.numc / 2):
             data_pow[i] = np.fromstring(
                 self.fpga.read('cal_probe' + str(i / 2) + '_xpow_s' + str((i % 2) + 1), 256 * 16, 0),
                 dtype='>q') / 2.0 ** 17
+
+            # Interleaving
             pow[2 * i + 0] = np.zeros(256)
             pow[2 * i + 1] = np.zeros(256)
             for j in range(len(data_pow[i]) / 2):

@@ -1,15 +1,14 @@
 import logging
 import sys
 import time
-
 import corr
 import matplotlib.pyplot as plt
 import mbf
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 bitstream = 'read_power_16chan_2017_Oct_30_1556.bof'
 katcp_port = 7147
+
 
 def exit_fail():
     print 'FAILURE DETECTED. Log entries:\n', lh.printMessages()
@@ -28,18 +27,15 @@ def exit_clean():
         pass
     exit()
 
-# Main
-if __name__ == '__main__':
-    from optparse import OptionParser
 
+# Main parser
+if __name__ == '__main__':
+
+    from optparse import OptionParser
     p = OptionParser()
     p.set_usage('read_power_16chan.py [options]')
     p.set_description(__doc__)
     p.add_option("-i", '--roach_ip', dest='roach', type='str', default='192.168.1.13')
-    # p.add_option('-l', '--acc_len', dest='acc_len', type='int', default=2 * (2 ** 28) / 2048,
-    #              help='Set the number of vectors to accumulate between dumps. default is 2*(2^28)/2048, or just under 2 seconds.')
-    # p.add_option('-g', '--gain', dest='gain', type='int', default=2**17,
-    #              help='Set the digital gain (6bit quantisation scalar). Default is 2*17 (least number for not loosing less-significant bits)')
     p.add_option('-s', '--skip', dest='skip', action='store_false', default=True,
                  help='Skip reprogramming the FPGA and configuring EQ.')
     p.add_option('-b', '--bof', dest='boffile', type='str', default=bitstream,
@@ -110,6 +106,7 @@ try:
     elif (not opts.power_bars) & opts.channels:
 
         channels = (fpga, plt.figure())
+
     else:
         # powers = mbf.displays.Powers(mbf.probes.PowerIntegrator(fpga), plt.figure())
         # channels = mbf.displays.LiveChannels(fpga, plt.figure())

@@ -11,29 +11,30 @@ class Spectra(animation.TimedAnimation):
         self.probe = probe
         self.mode = mode
         self.numc = self.probe.numc
-        self.scale = scale
-        _sp_rows = {1: 1,
-                    4: 1,
-                    16: 4,
-                    2: 1,
-                    6: 2}
-        _sp_columns = {1: 1,
-                       4: 4,
-                       16: 4,
-                       2: 2,
-                       6: 3}
         self.channels = [None]*self.numc
+        self.scale = scale
 
+        # Hashes for determining subplot size according to number of channels (numc)
+        # These values are the only supported: 1,2,4,16
+        _sp_rows = {1: 1,
+                    2: 1,
+                    4: 1,
+                    16: 4}
+        _sp_cols = {1: 1,
+                    2: 2,
+                    4: 4,
+                    16: 4}
+
+        # Set figures
         self.fig = fig
         self.axes = [None]*self.numc
         self.lines = [None]*self.numc
         self.t = np.linspace(0, 255, 256)  # needed as x domain
         for i in range(self.numc):
-            self.axes[i] = self.fig.add_subplot(_sp_rows[self.numc], _sp_columns[self.numc], i+1)
+            self.axes[i] = self.fig.add_subplot(_sp_rows[self.numc], _sp_cols[self.numc], i+1)
             self.axes[i].set_xlabel('Channels')
             self.axes[i].set_ylabel('Power [dB]')
             self.axes[i].set_title(mode+'[ a1 x '+self.letters[i/4]+str(i % 4+1)+' ]')
-            # self.axes[i].set_title(self.letters[i])
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
             self.axes[i].set_xlim(0, 255)
@@ -42,7 +43,6 @@ class Spectra(animation.TimedAnimation):
             else:
                 self.axes[i].set_ylim(-4, 4)
             self.axes[i].grid('on')
-            # self.axes[i].set_aspect('equal', 'datalim')
 
         plt.tight_layout()  # prevent text & graphs overlapping
         animation.TimedAnimation.__init__(self, fig, interval=50, blit=True)
@@ -63,11 +63,10 @@ class Spectra(animation.TimedAnimation):
             l.set_data([], [])
 
     def update_data(self):
+        # Retrieve data
         data_re, data_im, data_pow, acc_n = np.array(self.probe.read())
-        if self.scale == 'dB':
-            for i in range(self.numc):
-                data_pow[i] = 10*np.log10(data_pow[i]/(2.0**17))
 
+        # Choose what to display
         if self.mode == 'real':
             for i in range(self.numc):
                 self.channels[i] = data_re[i]
@@ -75,5 +74,10 @@ class Spectra(animation.TimedAnimation):
             for i in range(self.numc):
                 self.channels[i] = data_im[i]
         else:
+            # Convert data to dB scale
+            if self.scale == 'dB':
+                for i in range(self.numc):
+                    data_pow[i] = 10 * np.log10(data_pow[i] / (2.0 ** 17))
+
             for i in range(self.numc):
                 self.channels[i] = data_pow[i]

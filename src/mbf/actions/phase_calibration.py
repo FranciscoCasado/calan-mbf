@@ -44,23 +44,30 @@ class PhaseCalibration:
         self.set_phase('d4', (1 << 16), (1 << 16))
 
     def calibrate(self):
+        # Retrieve spectrometer data
         data_re, data_im, data_pow, acc_n = np.array(self._read_bram())
 
+        # Retrieve data from signal a1
         ref_re = np.sum(data_re[0][12:15])
         ref_im = np.sum(data_im[0][12:15])
         ref_mag = np.sqrt(ref_re**2 + ref_im**2)
+        # Obs: average channels 12:15 is the lazy solution for not-cheking that the source is set to 5.81 GHz
 
         for i in range(16):
+            # Retrieve data from signal i (a2,...,d4)
             pre_re = np.sum(data_re[i][12:15])
             pre_im = np.sum(data_im[i][12:15])
             pre_mag = np.sqrt(pre_re**2 + pre_im**2)
 
+            # Normalize calibration values to match signal a1 amplitude
             cal_re = pre_re/pre_mag*ref_mag/pre_mag*(1 << 16)
             cal_im = pre_im/pre_mag*ref_mag/pre_mag*(1 << 16)
 
-            print 'a'+str(i+1)+':  ',
+            print self.letters[i/4] + str((i % 4)+1) + ':  ',
             print str(int(data_re[i][13]))+'\t'+str(int(data_im[i][13]))
             print '\t \t'+str(int(cal_re))+'\t'+str(int(cal_im))
+
+            # Set phase
             self.set_phase(self.letters[i/4]+str((i % 4)+1), int(cal_re), int(cal_im))
 
     def _read_bram(self):
@@ -71,6 +78,8 @@ class PhaseCalibration:
         data_ab = [None] * 16
         ab_re = [None] * 16
         ab_im = [None] * 16
+
+        # Interleaving multiplication
         for i in range(16):
             data_ab[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xab_ab' + str(i % 4), 256 * 16, 0),
                                        dtype='>q')
@@ -82,6 +91,8 @@ class PhaseCalibration:
 
         data_pow = [None] * 16
         pow = [None] * 16
+
+        # Interleaving powers
         for i in range(16/2):
             data_pow[i] = np.fromstring(self.fpga.read('cal_probe' + str(i / 4) + '_xpow_s' + str((i % 2)+1), 256 * 16, 0),
                                        dtype='>q')

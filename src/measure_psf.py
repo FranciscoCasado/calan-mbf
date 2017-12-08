@@ -1,6 +1,5 @@
 import corr
 import logging
-import sys
 import time
 import matplotlib.pyplot as plt
 import mbf
@@ -14,8 +13,8 @@ logger = logging.getLogger('192.168.1.13')
 logger.addHandler(lh)
 logger.setLevel(10)
 
-bot = telegram.Bot('468799235:AAFTHYgMC1JqlSaYW1ZgpgZHMTyZ58Cc2H4')
-chat_id = 179065133
+# bot = telegram.Bot('YOUR BOT TOKEN')
+# chat_id = <your chat_id>
 
 ip_addr = '192.168.1.13'
 fpga = corr.katcp_wrapper.FpgaClient(ip_addr, 7147, timeout=10, logger=logger)
@@ -30,7 +29,7 @@ else:
 
 print 'Starting measure'
 datetime = strftime("%Y-%m-%d %H:%M:%S", localtime())
-bot.send_message(chat_id=chat_id, text='Running new measurement...'+datetime)
+# bot.send_message(chat_id=chat_id, text='Running new measurement...'+datetime)
 
 
 bf = mbf.actions.Beamformer(fpga, 6, 11)
@@ -45,7 +44,6 @@ phi = range(-90, 91, 3)
 value = np.zeros([len(theta), len(phi)])
 
 bf.steer_beam(0, 0)
-# val, index = probe.find_channel()
 time.sleep(1)
 
 
@@ -60,17 +58,13 @@ for i in range(len(theta)):
         re, im, pow, acc_n = probe.read()
         time.sleep(0.001)
         data = (pow[1]/(2.0**17))
-
-        # dummy data # pow = np.array([[0.5]*256, [0.4]*256])
-        # dummy data # data = np.exp(-((i-len(theta)/2.0)/(len(theta)))**2 - ((j-len(phi)/2.0)/(len(theta)))**2)
-
         data_dB = 10*np.log10(data)
-        value[j][len(theta)-i-1] = data[12]
+        value[j][len(theta)-i-1] = data[12]  #
 
 
 # Save results and notify
 np.savez('pattern_'+datetime+'.npz', theta, phi, value)
-bot.send_message(chat_id=chat_id, text='Done!... sending files')
+# bot.send_message(chat_id=chat_id, text='Done!... sending files')
 
 try:
     # Plot results
@@ -79,7 +73,7 @@ try:
     cmap = plt.cm.get_cmap("jet")
 
     plt.figure(figsize=(5, 4))
-    cp = plt.imshow(value, extent=[-90, 90, -90, 90])
+    cp = plt.imshow(value, extent=[-90, 90, -90, 90])   # don't forget to set extent to the previously defined range
     plt.xlabel(r'$\phi$ [$^\circ$]', fontsize=16)
     plt.ylabel(r'$\theta$ [$^\circ$]', fontsize=16)
     plt.tight_layout()
@@ -91,11 +85,11 @@ try:
     plt.savefig('pattern_'+datetime+'.png')
     plt.savefig('pattern_'+datetime+'.pdf')
 
-    # Send files
-    img = open('pattern_'+datetime+'.png', 'rb')
-    doc = open('pattern_'+datetime+'.pdf', 'rb')
-    bot.send_photo(chat_id=chat_id, photo=img)
-    bot.send_document(chat_id=chat_id, document=doc)
+    # Send files via Telegram
+    # img = open('pattern_'+datetime+'.png', 'rb')
+    # doc = open('pattern_'+datetime+'.pdf', 'rb')
+    # bot.send_photo(chat_id=chat_id, photo=img)
+    # bot.send_document(chat_id=chat_id, document=doc)
 
     # Display
     plt.show()
