@@ -35,7 +35,7 @@ class Powers(animation.TimedAnimation):
 
         plt.tight_layout()  # prevent text & graphs overlapping
 
-        animation.TimedAnimation.__init__(self, fig, interval=20, blit=True)
+        animation.TimedAnimation.__init__(self, fig, interval=1000, blit=True)
 
     def _draw_frame(self, framedata):
         self.update_data()

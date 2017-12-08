@@ -39,14 +39,14 @@ bf.steer_beam(0, 0)
 probe = mbf.probes.BfSpectrometer(fpga, 2)
 
 # Define range
-theta = range(-60, 61, 3)
-phi = range(-60, 61, 3)
+theta = range(-90, 91, 3)
+phi = range(-90, 91, 3)
 
 value = np.zeros([len(theta), len(phi)])
 
 bf.steer_beam(0, 0)
 # val, index = probe.find_channel()
-time.sleep(10)
+time.sleep(1)
 
 
 for i in range(len(theta)):

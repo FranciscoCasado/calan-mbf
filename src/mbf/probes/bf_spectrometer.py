@@ -1,6 +1,6 @@
 import corr
 import numpy as np
-
+import time
 
 class BfSpectrometer:
     def __init__(self, fpga, numc):
@@ -31,6 +31,7 @@ class BfSpectrometer:
             data_pow[i] = np.fromstring(
                 self.fpga.read('bf_probe0_xpow_s' + str(i + 1), 256 * 16, 0),
                 dtype='>q') / 2.0 ** 17
+            time.sleep(0.001)
             pow[2 * i + 0] = np.zeros(256)
             pow[2 * i + 1] = np.zeros(256)
             for j in range(len(data_pow[i]) / 2):

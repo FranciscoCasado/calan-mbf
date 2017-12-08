@@ -115,7 +115,7 @@ try:
         # channels = mbf.displays.LiveChannels(fpga, plt.figure())
         # spectra_real = mbf.displays.Spectra(fpga, plt.figure(), mode='real', numc=4)
         # spectra_imag = mbf.displays.Spectra(fpga, plt.figure(), mode='imag', numc=4)
-        spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga, numc=4), plt.figure(), mode='pow', scale='dB')
+        # spectra_pow = mbf.displays.Spectra(mbf.probes.CalSpectrometer(fpga, numc=4), plt.figure(), mode='pow', scale='dB')
         bf_spectra = mbf.displays.Spectra(mbf.probes.BfSpectrometer(fpga, numc=2), plt.figure(), mode='pow', scale='dB')
 
     plt.show()

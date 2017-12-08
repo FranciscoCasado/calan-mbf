@@ -30,13 +30,13 @@ class Spectra(animation.TimedAnimation):
         self.t = np.linspace(0, 255, 256)  # needed as x domain
         for i in range(self.numc):
             self.axes[i] = self.fig.add_subplot(_sp_rows[self.numc], _sp_columns[self.numc], i+1)
-            # axes[i].set_xlabel('N')
-            # axes[i].set_ylabel(self.letters[i/4]+str(i%4+1))
+            self.axes[i].set_xlabel('Channels')
+            self.axes[i].set_ylabel('Power [dB]')
             self.axes[i].set_title(mode+'[ a1 x '+self.letters[i/4]+str(i % 4+1)+' ]')
             # self.axes[i].set_title(self.letters[i])
             self.lines[i] = Line2D([], [], color='blue')
             self.axes[i].add_line(self.lines[i])
-            self.axes[i].set_xlim(0, 63)
+            self.axes[i].set_xlim(0, 255)
             if self.scale == 'dB':
                 self.axes[i].set_ylim(-80, 10)
             else:
